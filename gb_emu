@@ -1,0 +1,36 @@
+#!/usr/bin/env python3.6
+
+import sys
+
+sys.path.append('/opt/local/Library/Frameworks/Python.framework/Versions/3.6/lib/python3.6/site-packages')
+sys.path.append('src')
+
+import logging
+#import pygame
+
+from loader import Loader
+from proc import Proc
+
+
+def __main__():
+  root = logging.getLogger()
+  root.setLevel(logging.DEBUG)
+  
+  ch = logging.StreamHandler(sys.stdout)
+  ch.setLevel(logging.DEBUG)
+  
+  rom_path = "rom/tetris_world.gb";
+
+  proc = Proc()
+  loader = Loader()
+  proc.ram = loader.load_rom(rom_path)
+
+  logging.debug("Starting main emulation loop");
+
+  for i in range(15):
+    proc.emulate_cycle()
+
+  return 0;
+
+__main__()
+
