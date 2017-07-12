@@ -1,74 +1,26 @@
+from gpregisters import GPRegisters
+from ioregisters import IORegisters
 
 class Vcpu:
-  class Registers:
-    CARRY_FLAG           = 0x10 # C
-    HALFCARRY_FLAG       = 0x20 # H
-    SUBTRACT_FLAG        = 0x40 # N
-    ZERO_FLAG            = 0x80 # Z
-
-    class Register:
-      def __init__(self, name, value, regs):
-        self.name = name
-        self.value = value
-        self.regs = regs
-
-      def __or__(self, op):
-        if type(op) is int:
-          return (self.value | op)
-        elif type(op) is Vcpu.Registers.Register:
-          return (self.value | op.value)
-
-      def __xor__(self, op):
-        tmp = self.value ^ op.value
-        if(tmp == 0):
-          self.regs.flags |= Vcpu.Registers.ZERO_FLAG
-        return tmp
-      
-      def __isub__(self, op):
-        self.value -= op
-        return self.value
-
-      def __format__(self, spec):
-        return "{:02x}".format(self.value)
-
-    def __init__(self, regs):
-      super(Vcpu.Registers, self).__setattr__('regs', [Vcpu.Registers.Register(name, value, self) for (name, value) in regs])
-      #self.regs = [Vcpu.Registers.Register(name, value, self) for (name, value) in regs]
-      super(Vcpu.Registers, self).__setattr__('flags', 0xB0)
-    
-    def __setattr__(self, attr, value):
-      for reg in self.regs:
-          if reg.name == attr:
-            reg.value = value
-            break
-      #self.regs[attr] = value
-   
-    def __getattr__(self, attr):
-      for reg in self.regs:
-        if reg.name == attr:
-          return reg
-
-    def s_reg(self, op):
-      reg = (op & 0x07)
-      if(reg == 0x07): return self.A
-      elif(reg == 0x00) : return self.B
-      elif(reg == 0x01) : return self.C
-      elif(reg == 0x02) : return self.D
-      elif(reg == 0x03) : return self.E
-      elif(reg == 0x04) : return self.H
-      elif(reg == 0x05) : return self.L
-
-    def non_zero(self):
-      if(self.flags & ZERO) == 0:
-        return
-      else:
-        pass 
-
   def __init__(self):
-    self.gp = Vcpu.Registers([['B', 0x00], ['C', 0x13], ['D', 0x00], ['E', 0xDE], ['H', 0x01], ['L', 0x4D], ['A', 0x0], ['F', 0x01]])
+    self.gpregs = GPRegisters([['B', 0x00], ['C', 0x13], ['D', 0x00], ['E', 0xDE], ['H', 0x01], ['L', 0x4D], ['A', 0x0], ['F', 0x01]])
     self.pc = 0x100
     self.sp = 0xFFFE
-    self.ioregs = 42 * [0]
-
-  
-
+#    self.ioregs = IORegisters([['P1', 0x00, 0xFF00], ['SB', 0x00, 0x00F1],
+#                              ['SC', 0x00, 0xFF02], ['DIV', 0x00, 0xFF04]],
+#                              ['TIMA', 0x00, 0xFF05], ['TMA', 0x00, 0xFF06],
+#                             ['TAC', 0x00, 0xFF07], ['NR10', 0x80, 0xFF10],
+#                             ['NR11', 0xBF, 0xFF11], ['NR12', 0xF3, 0xFF12],
+#                             ['NR14', 0xBF, 0xFF14], ['NR21', 0x3F, 0xFF16],
+#                             ['NR22', 0x00, 0xFF17], ['NR24', 0xBF, 0xFF19],
+#                             ['NR30', 0x7F, 0xFF1A], ['NR31', 0xFF, 0xFF1B],
+#                             ['NR32', 0x9F, 0xFF1C], ['NR33', 0xBF, 0xFF1E],
+#                             ['NR41', 0xFF, 0xFF20], ['NR42', 0x00, 0xFF21],
+#                             ['NR42', 0x00, 0xFF22], ['NRXX', 0xBF, 0xFF23],
+#                             ['NR50', 0x77, 0xFF24], ['NR51', 0xF3, 0xFF25],
+#                             ['NR52', 0xF1, 0xFF26], ['LCDC', 0x91, 0xFF40],
+#                             ['SCY', 0x00, 0xFF42], ['SCX', 0x00, 0xFF43],
+#                             ['LYC', 0x00,x 0xFF45], ['BGP', 0xFC, 0xFF47],
+#                             ['OBP0', 0xFF, 0xFF48], ['OBP1', 0xFF, 0xFF49],
+#                             ['WY', 0x00, 0xFF4A], ['WX', 0x00, 0xFF4B],
+#                             ['IE', 0x00, 0xFFFF]])
